@@ -24,7 +24,9 @@ pnpm check:web      # refuses to pass if the page could reach the network
 
 ## Host
 
-Any static host works. The layout:
+The host itself, bucket, distribution, headers, and deploy roles, is defined in the public repository [Boundera/tools-site](https://github.com/Boundera/tools-site). This repository only deploys into its prefix: the `deploy` workflow runs on a `v*` tag, assumes the role that repository defines, syncs `dist-web/` to `sdr-redactor/`, invalidates the cache, and verifies the live hashes. It needs three Actions variables, copied from the tools-site outputs: `AWS_DEPLOY_ROLE_ARN`, `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID`.
+
+The layout any static host must reproduce:
 
 1. Copy `dist-web/` to the `sdr-redactor/` prefix of the host, so `dist-web/index.html` is served at `/sdr-redactor/index.html` and `/sdr-redactor/`.
 2. Redirect `/sdr-redactor` (no trailing slash) to `/sdr-redactor/`.

@@ -1,0 +1,51 @@
+# Publishes a tagged release to https://tools.boundera.io/sdr-redactor/.
+#
+# The deploy role, defined in Boundera/tools-site, trusts this repository on
+# v* tags only. It can write the sdr-redactor/ prefix and invalidate the
+# cache; nothing else. The three variables are set in this repository's
+# Actions settings and never appear in the workflow.
+name: deploy
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  deploy:
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm generate:check
+      - run: pnpm test
+      - run: pnpm build:web
+      - run: pnpm check:web
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+      # Hashed assets first, so a new index never points at a file that is not there yet.
+      - run: aws s3 sync dist-web/assets "s3://${{ vars.S3_BUCKET }}/sdr-redactor/assets/" --cache-control "public, max-age=31536000, immutable"
+      - run: aws s3 sync dist-web "s3://${{ vars.S3_BUCKET }}/sdr-redactor/" --exclude "assets/*" --delete --cache-control "public, max-age=300"
+      - run: aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/sdr-redactor/*"
+      - name: Verify the live page against this build
+        run: |
+          expected="$(cat dist-web/BUNDLE_SHA256.txt)"
+          for i in 1 2 3 4 5 6 7 8 9; do
+            served="$(curl -s https://tools.boundera.io/sdr-redactor/BUNDLE_SHA256.txt || true)"
+            if [ "$served" = "$expected" ]; then
+              echo "served hashes match the build"
+              curl -sI https://tools.boundera.io/sdr-redactor/ | grep -qi "content-security-policy:.*connect-src 'none'" && echo "policy header present" && exit 0
+              echo "policy header missing"; exit 1
+            fi
+            sleep 20
+          done
+          echo "served hashes never matched the build"; exit 1

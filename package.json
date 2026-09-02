@@ -1,0 +1,66 @@
+{
+  "name": "fedramp-sdr-redactor",
+  "version": "0.1.0",
+  "description": "Redact a FedRAMP Security Decision Record (SDR) for public sharing. Keeps the claim, removes the specifics. Runs in your browser or as a CLI; the document never leaves your machine.",
+  "license": "MIT",
+  "homepage": "https://redact.boundera.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Boundera/fedramp-sdr-redactor.git"
+  },
+  "bugs": "https://github.com/Boundera/fedramp-sdr-redactor/issues",
+  "keywords": [
+    "fedramp",
+    "fedramp-20x",
+    "sdr",
+    "security-decision-record",
+    "redaction",
+    "compliance"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "sdr-redact": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "generate": "tsx scripts/generate-vocabulary.ts",
+    "generate:check": "tsx scripts/generate-vocabulary.ts --check",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json",
+    "build:web": "vite build web && tsx scripts/stamp-web.ts",
+    "check:web": "tsx scripts/check-web-bundle.ts",
+    "dev:web": "vite web",
+    "preview:web": "vite preview web",
+    "verify": "pnpm generate:check && pnpm typecheck && pnpm test && pnpm build && pnpm build:web && pnpm check:web"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0"
+  },
+  "packageManager": "pnpm@10.7.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- CSP -->
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <title>SDR Redactor</title>
+    <meta
+      name="description"
+      content="Redact a FedRAMP Security Decision Record for public sharing. Runs entirely in your browser; the document never leaves your machine."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231B2440'/%3E%3Crect x='7' y='9' width='18' height='4' rx='1' fill='%23EEF2F8'/%3E%3Crect x='7' y='19' width='11' height='4' rx='1' fill='%2345C4CE'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <p class="eyebrow">FedRAMP 20x · open source · MIT</p>
+        <h1>SDR Redactor</h1>
+        <p class="lede">
+          Turn a Security Decision Record into a file you can share. Statuses, FedRAMP identifiers, dates, and counts
+          stay. Names, links, resources, accounts, and narrative text go.
+        </p>
+        <p class="promise">
+          <strong>Runs in your browser.</strong> Nothing you load here leaves this page. No upload, no account, no
+          analytics on content. Disconnect from the network and it still works.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="panel" aria-labelledby="h-input">
+        <h2 id="h-input">1. Load an SDR</h2>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Drop a JSON file here, or press Enter to choose a file">
+          <p class="drop-title"><strong>Drop a JSON file here</strong></p>
+          <p>
+            or <button type="button" class="linkish" id="choose">choose a file</button>, paste below, or
+            <button type="button" class="linkish" id="example">load the example</button>
+          </p>
+          <input type="file" id="file" accept="application/json,.json" hidden />
+        </div>
+        <label class="sr-only" for="paste">Paste SDR JSON</label>
+        <textarea id="paste" rows="7" spellcheck="false" placeholder='{ "certificationPackageOverviewUri": "https://…", "fedRampRequirements": [ … ] }'></textarea>
+        <p class="status" id="input-status" role="status"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="h-options">
+        <h2 id="h-options">2. Options</h2>
+        <div class="options">
+          <label class="opt"
+            ><span>Dates</span>
+            <select id="opt-dates">
+              <option value="keep">keep exact</option>
+              <option value="month">first day of the month</option>
+              <option value="year">first day of the year</option>
+              <option value="drop">remove</option>
+            </select></label
+          >
+          <label class="opt"
+            ><span>Numbers</span>
+            <select id="opt-numbers">
+              <option value="keep">keep exact</option>
+              <option value="coarse">round down to one digit</option>
+            </select></label
+          >
+          <label class="check"><input type="checkbox" id="opt-tests" /> Keep test names</label>
+          <label class="check"><input type="checkbox" id="opt-strip" /> Drop fields outside the schema</label>
+        </div>
+        <p class="hint">
+          Large numbers, nine digits and up, are always masked. Narrative text is always replaced whole; there is no
+          partial scrubbing to get wrong.
+        </p>
+        <details id="candidates" hidden>
+          <summary>Words you may want to keep</summary>
+          <p class="hint">
+            These fields hold a few repeated words, such as a provider or an assurance class. Each one became a token.
+            Tick the words that are safe to show. Only what you tick is kept.
+          </p>
+          <div id="candidate-list"></div>
+        </details>
+      </section>
+
+      <section class="panel" id="result-panel" aria-labelledby="h-result" hidden>
+        <h2 id="h-result">3. Result</h2>
+        <div class="stats" id="stats"></div>
+        <ul class="warnings" id="warnings"></ul>
+        <div class="actions">
+          <button type="button" class="primary" id="dl-doc">Download redacted SDR</button>
+          <button type="button" id="dl-report">Download report</button>
+          <button type="button" class="quiet" id="dl-map">Download token map</button>
+          <span class="hint">The token map holds the original values. Keep it private.</span>
+        </div>
+        <div class="compare">
+          <div>
+            <h3>Original</h3>
+            <pre id="orig" tabindex="0"></pre>
+          </div>
+          <div>
+            <h3>Redacted</h3>
+            <pre id="redacted" tabindex="0"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="wrap foot">
+      <p>
+        <span id="version">fedramp-sdr-redactor</span> · bundle sha256 <code id="hash">__BUNDLE_HASH__</code>
+      </p>
+      <p>
+        <a href="https://github.com/Boundera/fedramp-sdr-redactor">Source, tests, and license</a> · Hosted by Boundera. Not affiliated with GSA or the FedRAMP PMO.
+      </p>
+    </footer>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

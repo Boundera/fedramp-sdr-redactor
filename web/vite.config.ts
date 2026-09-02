@@ -14,7 +14,10 @@ export const CSP =
   "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'";
 
 export default defineConfig({
-  base: './',
+  // The page lives under this prefix on tools.boundera.io, the host shared by
+  // every client-only Boundera tool. Absolute asset paths under the prefix keep
+  // the page working whether or not the URL carries its trailing slash.
+  base: '/sdr-redactor/',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   build: {
     outDir: '../dist-web',

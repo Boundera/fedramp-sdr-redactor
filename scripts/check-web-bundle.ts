@@ -10,7 +10,17 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist-web');
 const NETWORK = /\b(fetch|XMLHttpRequest|WebSocket|sendBeacon|EventSource|importScripts|serviceWorker)\b/g;
-const EXTERNAL_TAG = /<(script|link)\b[^>]*\b(src|href)\s*=\s*["']?(https?:)?\/\//i;
+const TAG = /<(script|link)\b[^>]*>/gi;
+const EXTERNAL_REF = /\b(src|href)\s*=\s*["']?(https?:)?\/\//i;
+const CANONICAL = /\brel\s*=\s*["']?canonical\b/i;
+
+/** A script or a link that would load something from another origin. A canonical link loads nothing. */
+function loadsExternal(html: string): boolean {
+  for (const m of html.matchAll(TAG)) {
+    if (EXTERNAL_REF.test(m[0]) && !CANONICAL.test(m[0])) return true;
+  }
+  return false;
+}
 
 function files(dir: string): string[] {
   const out: string[] = [];
@@ -33,7 +43,7 @@ for (const f of all) {
     findings.push(`${rel}: "${m[0]}" near "${text.slice(Math.max(0, at - 40), at + 40).replace(/\s+/g, ' ')}"`);
   }
   if (f.endsWith('.html')) {
-    if (EXTERNAL_TAG.test(text)) findings.push(`${rel}: loads a script or stylesheet from another origin`);
+    if (loadsExternal(text)) findings.push(`${rel}: loads a script or stylesheet from another origin`);
     if (!text.includes('http-equiv="Content-Security-Policy"')) findings.push(`${rel}: no Content-Security-Policy meta tag`);
     if (!text.includes("connect-src 'none'")) findings.push(`${rel}: CSP does not refuse every connection`);
     if (text.includes('__BUNDLE_HASH__')) findings.push(`${rel}: bundle hash was not stamped`);

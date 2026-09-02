@@ -6,7 +6,7 @@
 [![FedRAMP 20x](https://img.shields.io/badge/FedRAMP-20x-0B2545.svg)](https://www.fedramp.gov/)
 [![Status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)](#status)
 
-**Web:** [redact.boundera.io](https://redact.boundera.io) · **Command:** `npx fedramp-sdr-redactor redact sdr.json` · **Library:** `import { redact } from 'fedramp-sdr-redactor'`
+**Web:** [tools.boundera.io/sdr-redactor](https://tools.boundera.io/sdr-redactor/) · **Command:** `npx fedramp-sdr-redactor redact sdr.json` · **Library:** `import { redact } from 'fedramp-sdr-redactor'`
 
 ## Why
 
@@ -54,7 +54,7 @@ Every rule decides by the **value**, never by the key name. Unknown keys, vendor
 
 ### Web
 
-Open [redact.boundera.io](https://redact.boundera.io). Drop or paste an SDR, look at the preview, and download the redacted file. Options for dates, numbers, and repeated words are one click away and off by default.
+Open [tools.boundera.io/sdr-redactor](https://tools.boundera.io/sdr-redactor/). Drop or paste an SDR, look at the preview, and download the redacted file. Options for dates, numbers, and repeated words are one click away and off by default.
 
 ### Command
 

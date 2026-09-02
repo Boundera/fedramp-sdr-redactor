@@ -21,3 +21,7 @@ pnpm verify
 Add a test for every rule change. The adversary cases in `test/adversary.test.ts` are numbered to match the specification; keep the numbering.
 
 Open a pull request against `main`. CI must pass.
+
+## Review and release rules
+
+`main` is protected: every change needs an approving review from a code owner (see `.github/CODEOWNERS`), CI must pass, and force pushes and deletions are refused. Release tags `v*` can be created only by the repository owner. A tag is what deploys to tools.boundera.io, so the deploy path is exactly as narrow as the tag rule.

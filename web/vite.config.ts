@@ -5,12 +5,13 @@ const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url),
 
 /**
  * The page's Content Security Policy. Injected at build time only, because
- * the dev server needs a socket for live reload. Every connection is refused,
- * every script and style must come from the page's own origin, and nothing
- * may embed the page.
+ * the dev server needs a socket for live reload. Every connection is refused
+ * and every script and style must come from the page's own origin.
+ * frame-ancestors cannot travel in a <meta> tag; the server header in
+ * DEPLOY.md carries it.
  */
 export const CSP =
-  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'";
 
 export default defineConfig({
   base: './',

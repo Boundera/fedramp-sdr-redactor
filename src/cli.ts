@@ -21,7 +21,6 @@ Options:
   --keep-test-names         Keep the schema's list of test names verbatim
   --keep-values <p=v1,v2>   Keep exact values under one path (repeatable)
   --strip-unknown           Drop every key the schema does not define
-  --map-out <file>          Write the token map (contains originals; keep private)
   -q, --quiet               No summary on stderr
   -h, --help                Show this help
   -v, --version             Show the version
@@ -39,7 +38,6 @@ interface Args {
   keepTestNames: boolean;
   keepValues: Record<string, string[]>;
   stripUnknown: boolean;
-  mapOut?: string;
   quiet: boolean;
   help: boolean;
   version: boolean;
@@ -96,9 +94,6 @@ function parseArgs(argv: string[]): Args {
       }
       case '--strip-unknown':
         a.stripUnknown = true;
-        break;
-      case '--map-out':
-        a.mapOut = take();
         break;
       case '-q':
       case '--quiet':
@@ -191,10 +186,6 @@ function main(argv: string[]): number {
   if (args.out) writeFileSync(args.out, out);
   else process.stdout.write(out);
   if (args.report) writeFileSync(args.report, `${JSON.stringify(result.report, null, 2)}\n`);
-  if (args.mapOut) {
-    writeFileSync(args.mapOut, `${JSON.stringify(result.map, null, 2)}\n`);
-    if (!args.quiet) process.stderr.write(`Token map written to ${args.mapOut}. It contains original values. Keep it private.\n`);
-  }
   if (!args.quiet) {
     const wrote = [args.out, args.report].filter(Boolean).join(', ');
     process.stderr.write(`${summarize(result.report)}${wrote ? `\nWrote ${wrote}` : ''}\n`);

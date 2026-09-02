@@ -113,7 +113,7 @@ describe('S0 to S10: string values', () => {
     expect(r.out.a).toBe('token-1');
     expect(r.out.b.c).toBe('token-1');
     expect(r.out.d).toBe('token-2');
-    expect(r.map['token-1']).toBe('payments-primary');
+    expect(JSON.stringify(r)).not.toContain('payments-primary');
   });
 
   it('S10 replaces text with a numbered, length-preserving placeholder', () => {
@@ -142,7 +142,7 @@ describe('N1 to N3 and B1: numbers and literals', () => {
     expect(String(Math.abs(r.out.c))).toHaveLength(9);
     expect(r.out.d).toBe(99999999);
     expect(r.report.summary['masked-number']).toBe(3);
-    expect(r.map[String(r.out.a)]).toBe('123456789012');
+    expect(JSON.stringify(r)).not.toContain('123456789012');
   });
 
   it('N3 rounds numbers down to one significant digit when asked', () => {
@@ -173,7 +173,7 @@ describe('K1 and K2: object keys', () => {
     expect(Object.keys(r.out)).toEqual(['redacted-key-1', 'redacted-key-2', 'redacted-key-3', 'redacted-key-4', 'alias', '1.2.3', 'us-gov-west-1', 'redaction']);
     expect(r.out['redacted-key-1'].alias).toBe('token-1');
     expect(r.report.paths.find((p) => p.path === '{key}')?.actions['pseudonym-key']).toBe(4);
-    expect(r.map['redacted-key-1']).toBe('123456789012');
+    expect(JSON.stringify(r)).not.toContain('123456789012');
   });
 });
 

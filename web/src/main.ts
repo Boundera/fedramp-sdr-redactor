@@ -5,7 +5,8 @@ import example from '../../test/fixtures/sample-sdr.json';
 declare const __APP_VERSION__: string;
 
 const DISPLAY_LIMIT = 200_000;
-const TOKEN_FORM = /("(?:uuid|arn|resource|email|ip|number|token)-\d+"|"\[redacted text #\d+, \d+ chars\]"|"https:\/\/redacted\.invalid\/\d+"|"\[redacted date\]"|"redacted-key-\d+")/g;
+const TOKEN_FORM =
+  /("(?:uuid|arn|resource|email|ip|number|token)-\d+"|"\[redacted text #\d+, \d+ chars\]"|"https:\/\/redacted\.invalid\/\d+"|"\[redacted date\]"|"redacted-key-\d+")/g;
 
 function el<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
@@ -21,12 +22,12 @@ const optDates = el<HTMLSelectElement>('opt-dates');
 const optNumbers = el<HTMLSelectElement>('opt-numbers');
 const optTests = el<HTMLInputElement>('opt-tests');
 const optStrip = el<HTMLInputElement>('opt-strip');
-const candidates = el<HTMLDetailsElement>('candidates');
+const candidates = el<HTMLDivElement>('candidates');
 const candidateList = el<HTMLDivElement>('candidate-list');
 const resultPanel = el<HTMLElement>('result-panel');
 const stats = el<HTMLDivElement>('stats');
 const warnings = el<HTMLUListElement>('warnings');
-const orig = el<HTMLPreElement>('orig');
+const readySub = el<HTMLParagraphElement>('ready-sub');
 const redacted = el<HTMLPreElement>('redacted');
 
 let original: unknown = null;
@@ -66,6 +67,7 @@ function load(text: string, name: string): void {
   keepValues = {};
   setStatus(`Loaded ${name}, ${originalBytes.toLocaleString()} bytes.`);
   run();
+  resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function run(): void {
@@ -110,11 +112,11 @@ function renderCandidates(baseline: RedactResult): void {
   }
 }
 
-function stat(value: string | number, label: string): HTMLElement {
+function stat(value: number, label: string): HTMLElement {
   const node = document.createElement('div');
   node.className = 'stat';
   const b = document.createElement('b');
-  b.textContent = typeof value === 'number' ? value.toLocaleString() : value;
+  b.textContent = value.toLocaleString();
   const s = document.createElement('span');
   s.textContent = label;
   node.append(b, s);
@@ -141,20 +143,30 @@ function clip(text: string): string {
   return `${text.slice(0, DISPLAY_LIMIT)}\n… showing the first ${DISPLAY_LIMIT.toLocaleString()} characters. The download has everything.`;
 }
 
+const SECTION_LABELS: Record<string, string> = {
+  fedRampRequirements: 'FedRAMP requirements',
+  keySecurityIndicators: 'Key Security Indicators',
+  securityControls: 'security controls',
+  portsAndProtocols: 'ports and protocols',
+};
+
 function render(r: RedactResult): void {
   const s = r.report.summary;
   const n = (k: string): number => s[k] ?? 0;
-  const kept = n('kept-enum') + n('kept-fedramp-id') + n('kept-fedramp-url') + n('kept-date') + n('kept-version') + n('kept-number') + n('kept-literal') + n('kept-by-option');
-  const replaced = n('text') + n('token') + n('uri') + n('pseudonym-key') + n('masked-number') + n('coarsened-number') + n('coarsened-date') + n('dropped-date') + n('stripped');
+  const kept =
+    n('kept-enum') + n('kept-fedramp-id') + n('kept-fedramp-url') + n('kept-date') + n('kept-version') +
+    n('kept-number') + n('kept-literal') + n('kept-by-option');
+  const replaced =
+    n('text') + n('token') + n('uri') + n('pseudonym-key') + n('masked-number') + n('coarsened-number') +
+    n('coarsened-date') + n('dropped-date') + n('stripped');
+
   stats.replaceChildren();
-  for (const [name, count] of Object.entries(r.report.input.sections)) stats.append(stat(count, name));
-  stats.append(stat(n('kept-enum'), 'statuses and schema words kept'));
+  for (const [name, count] of Object.entries(r.report.input.sections)) stats.append(stat(count, SECTION_LABELS[name] ?? name));
+  stats.append(stat(n('kept-enum'), 'statuses kept'));
   stats.append(stat(n('kept-fedramp-id'), 'FedRAMP identifiers kept'));
   stats.append(stat(kept, 'values kept'));
   stats.append(stat(replaced, 'values replaced'));
-  stats.append(stat(n('text'), 'texts replaced'));
-  stats.append(stat(n('token') + n('pseudonym-key'), 'identifiers replaced'));
-  stats.append(stat(n('uri'), 'links replaced'));
+  readySub.textContent = `${replaced.toLocaleString()} values replaced, ${kept.toLocaleString()} kept as written.`;
 
   warnings.replaceChildren();
   for (const w of r.report.warnings) {
@@ -170,7 +182,6 @@ function render(r: RedactResult): void {
     warnings.append(li);
   }
 
-  highlight(orig, clip(JSON.stringify(original, null, 2)));
   highlight(redacted, clip(JSON.stringify(r.doc, null, 2)));
   resultPanel.hidden = false;
 }
@@ -182,7 +193,7 @@ function explain(code: string): string {
     case 'schema-not-fedramp':
       return 'The $schema value is not on fedramp.gov, so it was replaced like any other link';
     case 'status-not-in-schema':
-      return 'A status field holds a word the schema does not define. It was replaced; tick it under "Words you may want to keep" if it is safe';
+      return 'A status field holds a word the schema does not define. It was replaced; open Options to keep it if it is safe';
     case 'large-text':
       return 'A very large text, probably an embedded file, was replaced';
     default:
@@ -202,18 +213,8 @@ function download(name: string, text: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function baseName(): string {
-  return sourceName.replace(/\.json$/i, '');
-}
-
 el<HTMLButtonElement>('dl-doc').addEventListener('click', () => {
-  if (result) download(`${baseName()}.redacted.json`, `${JSON.stringify(result.doc, null, 2)}\n`);
-});
-el<HTMLButtonElement>('dl-report').addEventListener('click', () => {
-  if (result) download(`${baseName()}.redaction-report.json`, `${JSON.stringify(result.report, null, 2)}\n`);
-});
-el<HTMLButtonElement>('dl-map').addEventListener('click', () => {
-  if (result) download(`${baseName()}.token-map.PRIVATE.json`, `${JSON.stringify(result.map, null, 2)}\n`);
+  if (result) download(`${sourceName.replace(/\.json$/i, '')}.redacted.json`, `${JSON.stringify(result.doc, null, 2)}\n`);
 });
 
 el<HTMLButtonElement>('choose').addEventListener('click', (e) => {

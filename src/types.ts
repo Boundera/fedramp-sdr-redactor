@@ -72,9 +72,6 @@ export interface Report {
   candidates: Candidate[];
 }
 
-/** Token or placeholder → the original value. Never leaves the machine unasked. */
-export type TokenMap = Record<string, string>;
-
 export interface Marker {
   tool: string;
   version: string;
@@ -99,8 +96,6 @@ export interface RedactResult {
   doc: unknown;
   /** What was done, as counts. Contains no original value. */
   report: Report;
-  /** Token → original. In memory only; the CLI writes it only with --map-out. */
-  map: TokenMap;
   /** The real words behind each candidate path, for a person to review on screen. */
   candidateValues: Record<string, string[]>;
 }

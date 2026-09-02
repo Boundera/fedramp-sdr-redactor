@@ -20,7 +20,7 @@ This tool makes sharing safe. A reader of a redacted SDR sees every requirement 
 
 - **Nothing leaves your machine.** The web page is static files. It makes no network request at all. Its Content Security Policy refuses every connection, and it loads no third-party script, not even analytics. Load it once, disconnect, and it still works.
 - **Nothing is stored.** No cookies, no local storage, no caches of your document.
-- **Nothing is hashed.** Tokens are counters, never hashes of the original, so a token cannot be reversed by guessing.
+- **Nothing maps back.** Tokens are counters, never hashes of the original, so a token cannot be reversed by guessing. No map from token to original is ever written.
 - **You can check.** The page footer shows the SHA-256 of the JavaScript it runs. `BUNDLE_SHA256.txt` in every release lists the same hashes. The source is here, under MIT.
 
 ## What stays and what goes
@@ -54,7 +54,7 @@ Every rule decides by the **value**, never by the key name. Unknown keys, vendor
 
 ### Web
 
-Open [redact.boundera.io](https://redact.boundera.io). Drop or paste an SDR. Review the counts, tick any repeated words that are safe to show, and download the redacted file and its report.
+Open [redact.boundera.io](https://redact.boundera.io). Drop or paste an SDR, look at the preview, and download the redacted file. Options for dates, numbers, and repeated words are one click away and off by default.
 
 ### Command
 
@@ -71,7 +71,6 @@ Options:
   --keep-test-names         Keep the schema's list of test names verbatim
   --keep-values <p=v1,v2>   Keep exact values under one path (repeatable)
   --strip-unknown           Drop every key the schema does not define
-  --map-out <file>          Write the token map (contains originals; keep private)
   -q, --quiet               No summary on stderr
 ```
 
@@ -82,10 +81,10 @@ Exit codes: 0 done, 1 bad arguments, 2 unreadable input. Any JSON content is pro
 ```ts
 import { redact } from 'fedramp-sdr-redactor';
 
-const { doc, report, map, candidateValues } = redact(sdr, { dates: 'month' });
+const { doc, report, candidateValues } = redact(sdr, { dates: 'month' });
 ```
 
-`doc` is the redacted document, `report` says what was done as counts, `map` is token to original and stays in memory unless you write it, and `candidateValues` holds the real words behind each candidate path so a person can decide what to keep. The function is pure and has no dependencies.
+`doc` is the redacted document, `report` says what was done as counts, and `candidateValues` holds the real words behind each candidate path so a person can decide what to keep. The function is pure and has no dependencies.
 
 ## The output
 

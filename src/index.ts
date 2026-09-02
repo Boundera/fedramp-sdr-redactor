@@ -13,5 +13,4 @@ export type {
   Report,
   ReportWarning,
   ResolvedOptions,
-  TokenMap,
 } from './types.js';

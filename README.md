@@ -130,7 +130,7 @@ The tool's only knowledge of the FedRAMP schema is generated from the vendored f
 
 ## Status
 
-Alpha. The rules are stable and tested against nineteen adversary cases, but the tool has not yet been run against many vendors' documents. Please open an issue with a redacted sample if a rule surprises you.
+Alpha. The rules are stable and tested against nineteen adversary cases, but the tool has not yet been run against many vendors' documents. If a rule surprises you, please open an issue with a small synthetic example. Never post a real Security Decision Record, or any part of one.
 
 ## Relationship to Boundera
 
@@ -138,4 +138,8 @@ Alpha. The rules are stable and tested against nineteen adversary cases, but the
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE). The MIT license covers the code in this repository.
+
+The Boundera name and the Boundera logo (`web/public/logo-symbol-navy.svg`, `web/public/favicon.svg`) are Boundera's marks and are not licensed for reuse. Replace them if you fork or self-host this page.
+
+The FedRAMP schemas under `schemas/` are published by FedRAMP and vendored unchanged. The fonts under `web/src/fonts/` are licensed under the SIL Open Font License 1.1; see the note beside them.

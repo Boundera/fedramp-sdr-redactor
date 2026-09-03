@@ -1,0 +1,39 @@
+name: Bug report
+description: A rule kept something it should have replaced, or replaced something it should have kept.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste a real Security Decision Record here, or any part of one.**
+        Issues are public. Build the smallest synthetic example that shows the problem.
+
+        If you found a way for an original value to reach the redacted document, the
+        report, or the network, report it privately instead: see [SECURITY.md](https://github.com/Boundera/fedramp-sdr-redactor/blob/main/SECURITY.md).
+  - type: textarea
+    id: input
+    attributes:
+      label: Synthetic input
+      description: The smallest JSON that shows the problem. Invented values only.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The version in the page footer, or the output of `sdr-redact --version`.
+    validations:
+      required: true
+  - type: checkboxes
+    id: synthetic
+    attributes:
+      label: Confirmation
+      options:
+        - label: Everything I pasted above is invented. None of it comes from a real Security Decision Record.
+          required: true

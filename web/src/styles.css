@@ -185,20 +185,16 @@ h1 {
   text-wrap: balance;
 }
 .mark {
-  position: relative;
-  isolation: isolate;
-  white-space: nowrap;
-}
-.mark::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.08em;
-  height: 0.16em;
-  border-radius: 9999px;
-  background: linear-gradient(to right, rgba(0, 188, 212, 0.6), rgba(0, 188, 212, 0.1));
-  z-index: -1;
+  /* The underline rides on the text's own background rather than an absolutely
+     positioned bar, so the phrase may wrap and each line still carries it.
+     It used to be white-space: nowrap, which made the headline 346px wide and
+     pushed the whole page sideways on a screen narrower than about 360px. */
+  background-image: linear-gradient(to right, rgba(0, 188, 212, 0.6), rgba(0, 188, 212, 0.1));
+  background-repeat: no-repeat;
+  background-size: 100% 0.16em;
+  background-position: 0 calc(100% - 0.08em);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 .lede {
   margin: 1.25rem 0 0;

@@ -373,6 +373,14 @@ textarea {
   font-size: 1.0625rem;
   font-weight: 600;
 }
+.caution {
+  flex-basis: 100%;
+  margin: 0 !important;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9375rem;
+  color: var(--muted-foreground);
+}
 #ready-sub {
   margin-top: 0.125rem;
   font-size: 0.9375rem;
@@ -474,6 +482,11 @@ input[type="checkbox"] {
 }
 .cand legend {
   display: inline-block;
+  /* A schema path is one long unbreakable token in a monospace face. Without
+     these two lines it sets the fieldset's min-content width and pushes the
+     whole page sideways on a phone. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
   border-radius: calc(var(--radius) * 0.6);
   background: color-mix(in oklab, var(--primary) 10%, transparent);
   padding: 0.125rem 0.375rem;
@@ -492,6 +505,8 @@ input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
 }

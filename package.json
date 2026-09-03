@@ -1,6 +1,6 @@
 {
   "name": "fedramp-sdr-redactor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Redact a FedRAMP Security Decision Record (SDR) for public sharing. Keeps the claim, removes the specifics. Runs in your browser or as a CLI; the document never leaves your machine.",
   "license": "MIT",
   "homepage": "https://tools.boundera.io/sdr-redactor/",

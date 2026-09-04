@@ -94,7 +94,7 @@ The redacted document has the same keys, nesting, array lengths, and types as th
 {
   "redaction": {
     "tool": "fedramp-sdr-redactor",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "redactedAt": "2026-09-02",
     "options": { "dates": "keep", "numbers": "keep", "keepTestNames": false, "stripUnknown": false, "keepValues": {} },
     "schemaSeen": "https://fedramp.gov/schemas/fedramp-security-decision-record-schema-2026-06-24.json",
